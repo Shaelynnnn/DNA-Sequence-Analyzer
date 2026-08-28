@@ -8,6 +8,8 @@ interface SequenceFormProps {
   onClear: () => void
 }
 
+const EXAMPLE_SEQUENCES = ['ATGCGTAC', 'GGCCTTAAGC', 'TACGATCGATGC']
+
 /** Collect the DNA sequence and notify the parent when the user submits it. */
 export function SequenceForm({
   sequence,
@@ -51,6 +53,21 @@ export function SequenceForm({
           Use A, T, G, and C. Whitespace is removed and letters are converted to
           uppercase automatically.
         </p>
+
+        <div className="example-sequences" aria-label="Example DNA sequences">
+          <span>Try an example</span>
+          {EXAMPLE_SEQUENCES.map((example) => (
+            <button
+              className="example-chip"
+              type="button"
+              key={example}
+              onClick={() => onSequenceChange(example)}
+              disabled={isLoading}
+            >
+              {example}
+            </button>
+          ))}
+        </div>
 
         <div className="form-actions">
           <button

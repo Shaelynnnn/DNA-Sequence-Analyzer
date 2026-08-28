@@ -59,11 +59,11 @@ function App() {
   return (
     <main className="app-shell">
       <header className="page-header">
-        <p className="eyebrow">BIOINFORMATICS TOOL</p>
-        <h1>DNA Sequence Analyzer</h1>
+        <p className="eyebrow">DNA SEQUENCE INTELLIGENCE</p>
+        <h1>Helixora</h1>
         <p className="intro">
-          Enter a DNA sequence to inspect its base composition, GC content, and
-          complementary sequences.
+          Decode every base with clarity. Explore composition, GC content, and
+          complementary sequences in seconds.
         </p>
       </header>
 
