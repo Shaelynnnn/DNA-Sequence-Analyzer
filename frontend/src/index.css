@@ -1,0 +1,64 @@
+:root {
+  --color-primary: #176b5b;
+  --color-primary-hover: #105548;
+  --color-primary-soft: rgba(23, 107, 91, 0.16);
+  --color-heading: #172521;
+  --color-text: #34443f;
+  --color-muted: #697973;
+  --color-background: #f3f7f5;
+  --color-surface: #ffffff;
+  --color-input: #f8faf9;
+  --color-border: #dfe8e4;
+  --color-border-strong: #c7d5cf;
+  --color-error: #9f2d2d;
+  --color-error-soft: #fff1f1;
+  --color-error-border: #f1c3c3;
+  --color-success: #176b45;
+  --color-success-soft: #e5f6ed;
+  --shadow-panel: 0 16px 45px rgba(31, 61, 53, 0.07);
+  --shadow-panel-hover: 0 22px 55px rgba(31, 61, 53, 0.12);
+  --font-display: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --font-sans: "Avenir Next", Avenir, "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --font-mono: "SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono",
+    monospace;
+
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-background);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(91, 173, 144, 0.16), transparent 28rem),
+    radial-gradient(circle at 5% 45%, rgba(81, 142, 197, 0.08), transparent 24rem),
+    var(--color-background);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: var(--color-primary-soft);
+}
