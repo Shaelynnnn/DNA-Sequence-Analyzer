@@ -53,7 +53,24 @@ def test_analyze_valid_sequence_returns_complete_analysis() -> None:
             "C": 1,
         },
         "gc_content": 50.0,
+        "gc_content_min": 50.0,
+        "gc_content_max": 50.0,
         "at_content": 50.0,
+        "ambiguity_count": 0,
+        "ambiguity_percentage": 0.0,
+        "ambiguity_counts": {
+            "R": 0,
+            "Y": 0,
+            "S": 0,
+            "W": 0,
+            "K": 0,
+            "M": 0,
+            "B": 0,
+            "D": 0,
+            "H": 0,
+            "V": 0,
+            "N": 0,
+        },
         "complement": "TACG",
         "reverse_complement": "GCAT",
     }
@@ -70,6 +87,21 @@ def test_analyze_invalid_sequence_returns_bad_request() -> None:
     assert response.json() == {
         "detail": "DNA sequence contains invalid characters: X"
     }
+
+
+def test_analyze_iupac_sequence_returns_ambiguity_analysis() -> None:
+    """IUPAC symbols should be preserved and analyzed transparently."""
+    response = client.post("/api/analyze", json={"sequence": "ATGN"})
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["sequence"] == "ATGN"
+    assert result["ambiguity_count"] == 1
+    assert result["ambiguity_counts"]["N"] == 1
+    assert result["gc_content"] == 37.5
+    assert result["gc_content_min"] == 25.0
+    assert result["gc_content_max"] == 50.0
+    assert result["reverse_complement"] == "NCAT"
 
 
 def test_analyze_empty_sequence_returns_bad_request() -> None:
