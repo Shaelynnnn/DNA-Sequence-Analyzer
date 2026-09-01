@@ -6,7 +6,8 @@ analyzes DNA sequences.
 
 ## Features
 
-- Accept DNA sequences containing `A`, `T`, `G`, and `C`.
+- Accept canonical DNA bases and IUPAC ambiguity codes
+  (`A C G T R Y S W K M B D H V N`).
 - Accept typed or pasted sequences and uploaded FASTA or plain-text files.
 - Support click-to-select and drag-and-drop file uploads up to 5 MB.
 - Remove whitespace and normalize lowercase input to uppercase.
@@ -14,6 +15,8 @@ analyzes DNA sequences.
 - Calculate total sequence length.
 - Count every supported DNA base.
 - Calculate GC and AT content percentages.
+- Report expected GC content and its possible range for ambiguous sequences.
+- Count IUPAC ambiguity symbols and report their proportion.
 - Generate the complement and reverse complement.
 - Display loading, validation, API, and network error states.
 - Fill the input quickly with interactive example sequences.

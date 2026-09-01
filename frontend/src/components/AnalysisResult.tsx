@@ -1,5 +1,19 @@
 import type { DNAAnalysisResponse } from '../api'
 
+const IUPAC_MEANINGS = {
+  R: 'A or G',
+  Y: 'C or T',
+  S: 'G or C',
+  W: 'A or T',
+  K: 'G or T',
+  M: 'A or C',
+  B: 'C, G, or T',
+  D: 'A, G, or T',
+  H: 'A, C, or T',
+  V: 'A, C, or G',
+  N: 'Any base',
+} as const
+
 interface AnalysisResultProps {
   result: DNAAnalysisResponse
 }
@@ -20,11 +34,15 @@ function SequenceRow({ label, value }: SequenceRowProps) {
 
 /** Present the successful response returned by the DNA analysis API. */
 export function AnalysisResult({ result }: AnalysisResultProps) {
+  const ambiguityEntries = Object.entries(result.ambiguity_counts).filter(
+    ([, count]) => count > 0,
+  ) as [keyof typeof IUPAC_MEANINGS, number][]
+  const hasAmbiguity = result.ambiguity_count > 0
+
   return (
     <section className="panel result-panel" aria-labelledby="result-heading">
       <div className="section-heading">
         <div>
-          <p className="step-label">STEP 02</p>
           <h2 id="result-heading">Analysis results</h2>
         </div>
         <span className="success-badge">Complete</span>
@@ -37,9 +55,15 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
           <small>bp</small>
         </article>
         <article className="summary-card">
-          <span>GC content</span>
+          <span>{hasAmbiguity ? 'Expected GC content' : 'GC content'}</span>
           <strong>{result.gc_content.toFixed(2)}</strong>
           <small>%</small>
+          {hasAmbiguity && (
+            <small className="summary-range">
+              Range {result.gc_content_min.toFixed(2)}–
+              {result.gc_content_max.toFixed(2)}%
+            </small>
+          )}
         </article>
         <article className="summary-card">
           <span>AT content</span>
@@ -47,6 +71,32 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
           <small>%</small>
         </article>
       </div>
+
+      {hasAmbiguity && (
+        <div className="ambiguity-summary" role="note">
+          <div>
+            <span className="ambiguity-icon" aria-hidden="true">?</span>
+            <div>
+              <strong>IUPAC ambiguity detected</strong>
+              <p>
+                {result.ambiguity_count} of {result.length} bases (
+                {result.ambiguity_percentage.toFixed(2)}%) are ambiguous. Content
+                values use the expected probability; the GC range shows all
+                possible outcomes.
+              </p>
+            </div>
+          </div>
+          <dl className="ambiguity-counts">
+            {ambiguityEntries.map(([code, count]) => (
+              <div key={code}>
+                <dt>{code}</dt>
+                <dd>{count}</dd>
+                <dd className="ambiguity-meaning">{IUPAC_MEANINGS[code]}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
 
       <div className="result-section">
         <h3>Base counts</h3>
