@@ -7,6 +7,8 @@ analyzes DNA sequences.
 ## Features
 
 - Accept DNA sequences containing `A`, `T`, `G`, and `C`.
+- Accept typed or pasted sequences and uploaded FASTA or plain-text files.
+- Support click-to-select and drag-and-drop file uploads up to 5 MB.
 - Remove whitespace and normalize lowercase input to uppercase.
 - Reject empty sequences and unsupported characters with clear error messages.
 - Calculate total sequence length.
@@ -180,7 +182,8 @@ Make sure port `5173` is available when starting Vite.
 ## Usage
 
 1. Open the Helixora frontend.
-2. Enter a DNA sequence or select an example sequence.
+2. Type or paste a DNA sequence, upload a `.fasta`, `.fa`, `.fna`, or `.txt`
+   file, or select an example sequence.
 3. Select **Analyze sequence**.
 4. Review the normalized sequence, length, base counts, composition percentages,
    complement, and reverse complement.
