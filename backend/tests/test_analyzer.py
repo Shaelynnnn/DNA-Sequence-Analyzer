@@ -4,6 +4,8 @@ from app.analyzer import (
     analyze_dna,
     calculate_at_content,
     calculate_gc_content,
+    calculate_gc_content_range,
+    count_ambiguity_bases,
     count_bases,
     generate_complement,
     generate_reverse_complement,
@@ -25,8 +27,8 @@ def test_normalize_sequence(raw_sequence: str, expected: str) -> None:
     assert normalize_sequence(raw_sequence) == expected
 
 
-def test_validate_sequence_accepts_valid_dna() -> None:
-    assert validate_sequence("ATGC") is None
+def test_validate_sequence_accepts_valid_dna_and_iupac_codes() -> None:
+    assert validate_sequence("ATGCRYSWKMBDHVN") is None
 
 
 def test_validate_sequence_rejects_empty_dna() -> None:
@@ -40,7 +42,7 @@ def test_validate_sequence_reports_unique_invalid_characters() -> None:
     with pytest.raises(ValueError) as error:
         validate_sequence("ATGNNXX")
 
-    assert str(error.value) == "DNA sequence contains invalid characters: N, X"
+    assert str(error.value) == "DNA sequence contains invalid characters: X"
 
 
 def test_validate_sequence_rejects_non_dna_characters() -> None:
@@ -56,6 +58,22 @@ def test_count_bases_counts_all_bases() -> None:
 
 def test_count_bases_includes_bases_with_zero_matches() -> None:
     assert count_bases("AAAA") == {"A": 4, "T": 0, "G": 0, "C": 0}
+
+
+def test_count_ambiguity_bases_counts_every_iupac_code() -> None:
+    assert count_ambiguity_bases("RRYSN") == {
+        "R": 2,
+        "Y": 1,
+        "S": 1,
+        "W": 0,
+        "K": 0,
+        "M": 0,
+        "B": 0,
+        "D": 0,
+        "H": 0,
+        "V": 0,
+        "N": 1,
+    }
 
 
 @pytest.mark.parametrize(
@@ -84,13 +102,40 @@ def test_generate_reverse_complement() -> None:
     assert generate_reverse_complement("ATGC") == "GCAT"
 
 
+def test_iupac_content_and_complements() -> None:
+    sequence = "RYSWKMBDHVN"
+
+    assert calculate_gc_content(sequence) == 50.0
+    assert calculate_at_content(sequence) == 50.0
+    assert calculate_gc_content_range(sequence) == (9.09, 90.91)
+    assert generate_complement(sequence) == "YRSWMKVHDBN"
+    assert generate_reverse_complement(sequence) == "NBDHVKMWSRY"
+
+
 def test_analyze_dna_returns_complete_analysis() -> None:
     assert analyze_dna(" atgc\n ") == {
         "sequence": "ATGC",
         "length": 4,
         "counts": {"A": 1, "T": 1, "G": 1, "C": 1},
         "gc_content": 50.0,
+        "gc_content_min": 50.0,
+        "gc_content_max": 50.0,
         "at_content": 50.0,
+        "ambiguity_count": 0,
+        "ambiguity_percentage": 0.0,
+        "ambiguity_counts": {
+            "R": 0,
+            "Y": 0,
+            "S": 0,
+            "W": 0,
+            "K": 0,
+            "M": 0,
+            "B": 0,
+            "D": 0,
+            "H": 0,
+            "V": 0,
+            "N": 0,
+        },
         "complement": "TACG",
         "reverse_complement": "GCAT",
     }
@@ -100,7 +145,7 @@ def test_analyze_dna_returns_complete_analysis() -> None:
     ("raw_sequence", "expected_message"),
     [
         (" \n\t ", "DNA sequence cannot be empty."),
-        ("atgnx", "DNA sequence contains invalid characters: N, X"),
+        ("atgnx", "DNA sequence contains invalid characters: X"),
     ],
 )
 def test_analyze_dna_rejects_invalid_input(
@@ -111,3 +156,17 @@ def test_analyze_dna_rejects_invalid_input(
         analyze_dna(raw_sequence)
 
     assert str(error.value) == expected_message
+
+
+def test_analyze_dna_preserves_iupac_ambiguity() -> None:
+    analysis = analyze_dna("atgn")
+
+    assert analysis["sequence"] == "ATGN"
+    assert analysis["ambiguity_count"] == 1
+    assert analysis["ambiguity_percentage"] == 25.0
+    assert analysis["ambiguity_counts"]["N"] == 1
+    assert analysis["gc_content"] == 37.5
+    assert analysis["gc_content_min"] == 25.0
+    assert analysis["gc_content_max"] == 50.0
+    assert analysis["complement"] == "TACN"
+    assert analysis["reverse_complement"] == "NCAT"
