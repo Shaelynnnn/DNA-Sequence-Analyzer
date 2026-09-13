@@ -1,9 +1,8 @@
-# Canonical and IUPAC ambiguity symbols accepted for DNA sequences.
 CANONICAL_BASES = ("A", "T", "G", "C")
 AMBIGUITY_BASES = ("R", "Y", "S", "W", "K", "M", "B", "D", "H", "V", "N")
 VALID_BASES = frozenset((*CANONICAL_BASES, *AMBIGUITY_BASES))
 
-# Fractional GC contribution used for the expected GC-content calculation.
+# Ambiguous bases assume equal probability for each possible nucleotide.
 GC_PROBABILITY = {
     "A": 0.0,
     "T": 0.0,
@@ -42,7 +41,6 @@ COMPLEMENT_MAP = str.maketrans(
     }
 )
 
-# change the input to uppercase and remove whitespace to make it easier to validate and analyze
 def normalize_sequence(sequence: str) -> str:
     """Return an uppercase DNA sequence with all whitespace removed."""
     return "".join(sequence.split()).upper()
@@ -62,7 +60,7 @@ def validate_sequence(sequence: str) -> None:
 
 
 def count_bases(sequence: str) -> dict[str, int]:
-    """Count every supported DNA base, including bases with zero matches."""
+    """Count canonical bases, including bases with zero matches."""
     return {
         "A": sequence.count("A"),
         "T": sequence.count("T"),

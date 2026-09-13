@@ -24,7 +24,6 @@ const EXAMPLE_SEQUENCES = [
   'ATGCRYN',
 ]
 
-/** Collect the DNA sequence and notify the parent when the user submits it. */
 export function SequenceForm({
   sequence,
   isLoading,
@@ -48,7 +47,6 @@ export function SequenceForm({
   }, [isUploadOpen])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    // Prevent the browser's normal form submission from reloading the page.
     event.preventDefault()
     void onSubmit()
   }

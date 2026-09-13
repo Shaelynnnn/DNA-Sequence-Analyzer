@@ -24,10 +24,12 @@ export async function parseSequenceFile(file: File): Promise<ParsedSequenceFile>
     throw new Error('The selected file is larger than the 5 MB limit.')
   }
 
+  // Some text editors prepend a UTF-8 BOM before the FASTA header.
   const content = (await file.text()).replace(/^\uFEFF/, '')
   const lines = content.split(/\r?\n/)
   const headerCount = lines.filter((line) => line.trimStart().startsWith('>')).length
 
+  // Combining records would report a misleading length and complement.
   if (headerCount > 1) {
     throw new Error(
       'This FASTA contains multiple records. Upload a file with one sequence at a time.',

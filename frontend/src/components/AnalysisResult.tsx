@@ -32,7 +32,6 @@ function SequenceRow({ label, value }: SequenceRowProps) {
   )
 }
 
-/** Present the successful response returned by the DNA analysis API. */
 export function AnalysisResult({ result }: AnalysisResultProps) {
   const ambiguityEntries = Object.entries(result.ambiguity_counts).filter(
     ([, count]) => count > 0,

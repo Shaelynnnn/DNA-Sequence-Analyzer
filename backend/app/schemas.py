@@ -2,10 +2,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+
 class HealthResponse(BaseModel):
     """Response returned by the health-check endpoint."""
 
     status: Literal["ok"]
+
 
 class DNAAnalysisRequest(BaseModel):
     """JSON body accepted by the DNA analysis endpoint."""
@@ -15,8 +17,9 @@ class DNAAnalysisRequest(BaseModel):
         examples=["ATGC"],
     )
 
+
 class BaseCounts(BaseModel):
-    """Number of occurrences of each supported DNA base."""
+    """Number of occurrences of each canonical DNA base."""
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -24,6 +27,7 @@ class BaseCounts(BaseModel):
     thymine: int = Field(alias="T", ge=0)
     guanine: int = Field(alias="G", ge=0)
     cytosine: int = Field(alias="C", ge=0)
+
 
 class AmbiguityCounts(BaseModel):
     """Counts for every supported IUPAC ambiguity symbol."""
@@ -41,6 +45,7 @@ class AmbiguityCounts(BaseModel):
     not_guanine: int = Field(alias="H", ge=0)
     not_thymine: int = Field(alias="V", ge=0)
     any_base: int = Field(alias="N", ge=0)
+
 
 class DNAAnalysisResponse(BaseModel):
     """Successful DNA analysis returned by the API."""

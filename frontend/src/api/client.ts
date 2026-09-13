@@ -54,7 +54,6 @@ function getErrorMessage(response: Response, body: unknown): string {
  * Send a request to the backend and deserialize its JSON response.
  * Network errors remain native TypeErrors; HTTP failures become ApiErrors.
  */
-// async allows this function to await work and guarantees a Promise return value.
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
@@ -65,7 +64,6 @@ export async function apiRequest<T>(
     headers.set('Content-Type', 'application/json')
   }
 
-  // await pauses this function until fetch resolves with the HTTP response.
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     headers,

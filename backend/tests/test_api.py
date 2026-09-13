@@ -5,12 +5,10 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 
-# TestClient lets the tests call the API without starting a real web server.
 client = TestClient(app)
 
 
 def test_health_check_returns_ok() -> None:
-    """The health endpoint should confirm that the API is available."""
     response = client.get("/api/health")
 
     assert response.status_code == 200
@@ -18,7 +16,6 @@ def test_health_check_returns_ok() -> None:
 
 
 def test_cors_allows_vite_development_server() -> None:
-    """The browser preflight request should allow the local React frontend."""
     response = client.options(
         "/api/analyze",
         headers={
@@ -36,7 +33,6 @@ def test_cors_allows_vite_development_server() -> None:
 
 
 def test_analyze_valid_sequence_returns_complete_analysis() -> None:
-    """A valid sequence should be normalized and fully analyzed."""
     response = client.post(
         "/api/analyze",
         json={"sequence": " atgc\n "},
@@ -77,7 +73,6 @@ def test_analyze_valid_sequence_returns_complete_analysis() -> None:
 
 
 def test_analyze_invalid_sequence_returns_bad_request() -> None:
-    """Unsupported DNA characters should produce a client-facing error."""
     response = client.post(
         "/api/analyze",
         json={"sequence": "ATGX"},
@@ -90,7 +85,6 @@ def test_analyze_invalid_sequence_returns_bad_request() -> None:
 
 
 def test_analyze_iupac_sequence_returns_ambiguity_analysis() -> None:
-    """IUPAC symbols should be preserved and analyzed transparently."""
     response = client.post("/api/analyze", json={"sequence": "ATGN"})
 
     assert response.status_code == 200
@@ -105,7 +99,6 @@ def test_analyze_iupac_sequence_returns_ambiguity_analysis() -> None:
 
 
 def test_analyze_empty_sequence_returns_bad_request() -> None:
-    """A sequence containing only whitespace should be rejected."""
     response = client.post(
         "/api/analyze",
         json={"sequence": " \n\t "},
@@ -116,7 +109,6 @@ def test_analyze_empty_sequence_returns_bad_request() -> None:
 
 
 def test_analyze_missing_sequence_returns_validation_error() -> None:
-    """FastAPI should reject a request that omits the required field."""
     response = client.post("/api/analyze", json={})
 
     assert response.status_code == 422

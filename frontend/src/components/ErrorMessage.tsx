@@ -2,7 +2,6 @@ interface ErrorMessageProps {
   message: string
 }
 
-/** Display request or validation failures in an accessible alert region. */
 export function ErrorMessage({ message }: ErrorMessageProps) {
   return (
     <div className="error-message" role="alert">

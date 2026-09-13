@@ -1,309 +1,93 @@
 # Helixora
 
-Helixora is a full-stack DNA sequence analysis tool. It provides a responsive
-React interface backed by a FastAPI service that normalizes, validates, and
-analyzes DNA sequences.
+A DNA sequence analyzer built with React and TypeScript. The hosted application
+runs in the browser; a Python/FastAPI implementation is also included in `backend/`.
 
 ## Features
 
-- Accept canonical DNA bases and IUPAC ambiguity codes
-  (`A C G T R Y S W K M B D H V N`).
-- Accept typed or pasted sequences and uploaded FASTA or plain-text files.
-- Support click-to-select and drag-and-drop file uploads up to 5 MB.
-- Remove whitespace and normalize lowercase input to uppercase.
-- Reject empty sequences and unsupported characters with clear error messages.
-- Calculate total sequence length.
-- Count every supported DNA base.
-- Calculate GC and AT content percentages.
-- Report expected GC content and its possible range for ambiguous sequences.
-- Count IUPAC ambiguity symbols and report their proportion.
-- Generate the complement and reverse complement.
-- Display loading, validation, API, and network error states.
-- Fill the input quickly with interactive example sequences.
-- Adapt the interface for desktop and mobile screens.
-- Provide automatically generated OpenAPI documentation.
+- Paste a sequence or upload one FASTA/plain-text file (up to 5 MB).
+- Normalize whitespace and lowercase input, and reject invalid characters.
+- Calculate base counts, GC/AT content, complements, and reverse complements.
+- Handle IUPAC ambiguity codes and show an expected GC value and possible range.
+- Try built-in example sequences without preparing a file.
 
-## Technology Stack
+Ambiguous nucleotides are weighted equally across their possible bases. For
+example, N contributes 0.5 to the expected GC count. This is a calculation
+assumption, not an estimate from experimental data.
 
-### Frontend
+## Run locally
 
-- React 19
-- TypeScript
-- Vite
-- CSS
-- Oxlint
+Use Node.js 24 for the frontend and its tests.
 
-### Backend
-
-- Python
-- FastAPI
-- Pydantic
-- Uvicorn
-- pytest
-
-## Architecture
-
-```text
-User
-  |
-  v
-React UI components
-  |
-  v
-DNA API module (dna.ts)
-  |
-  v
-HTTP client (client.ts)
-  |
-  v
-FastAPI endpoints (main.py)
-  |
-  v
-DNA analysis logic (analyzer.py)
+```sh
+cd frontend
+npm ci
+npm run dev
 ```
 
-The frontend separates page state, presentation components, API functions, and
-HTTP transport. The backend separates HTTP endpoints, request and response
-schemas, and domain analysis logic.
+Open the address printed by Vite. No backend or environment file is needed for
+the default browser mode. Sequence data stays in the browser in this mode.
 
-## Project Structure
+## Optional Python API
 
-```text
-DNA-Sequence-Analyzer/
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── analyzer.py          # DNA normalization and analysis logic
-│   │   ├── main.py              # FastAPI application and endpoints
-│   │   └── schemas.py           # Pydantic request and response schemas
-│   ├── tests/
-│   │   ├── test_analyzer.py     # Unit tests for DNA analysis
-│   │   └── test_api.py          # API integration tests
-│   └── requirements.txt         # Python dependencies
-├── frontend/
-│   ├── public/                  # Public static assets
-│   ├── src/
-│   │   ├── api/
-│   │   │   ├── client.ts        # Shared HTTP client and API errors
-│   │   │   ├── dna.ts           # DNA-specific API functions
-│   │   │   ├── index.ts         # Public API-layer exports
-│   │   │   └── types.ts         # API request and response types
-│   │   ├── components/
-│   │   │   ├── AnalysisResult.tsx
-│   │   │   ├── ErrorMessage.tsx
-│   │   │   └── SequenceForm.tsx
-│   │   ├── App.css              # Page and component styles
-│   │   ├── App.tsx              # Page state and API coordination
-│   │   ├── index.css            # Global styles and design tokens
-│   │   └── main.tsx             # React application entry point
-│   ├── .env.example             # Example frontend environment variables
-│   ├── index.html               # Browser document entry point
-│   └── package.json             # Frontend dependencies and scripts
-└── README.md
-```
+Use Python 3.10 or newer:
 
-## Requirements
-
-- Python 3.10 or newer
-- Node.js `^20.19.0` or `>=22.12.0`
-- npm
-
-## Installation
-
-Clone the repository and enter its directory:
-
-```bash
-git clone <repository-url>
-cd DNA-Sequence-Analyzer
-```
-
-### Backend setup
-
-Create and activate a Python virtual environment:
-
-```bash
+```sh
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
 
-### Frontend setup
-
-From the repository root:
-
-```bash
-cd frontend
-npm install
-```
-
-The API base URL defaults to `http://localhost:8000`. To configure another
-backend origin, create a local environment file:
-
-```bash
-cp .env.example .env
-```
-
-Then update:
+To connect the React frontend, create `frontend/.env.local` with:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000
 ```
 
-Do not include a trailing slash in the URL.
+Restart Vite after changing the environment file. In API mode, submitted
+sequences are sent to the backend. The API accepts requests from the local
+frontend at `http://localhost:5173`.
 
-## Running the Application
+- `GET /api/health`: service status.
+- `POST /api/analyze`: JSON body such as `{"sequence": "ATGC"}`.
+- `/docs`: interactive API documentation.
 
-The frontend and backend must run at the same time. Use two terminal windows.
+## Checks
 
-### Terminal 1: backend
-
-```bash
-cd backend
-source .venv/bin/activate
-uvicorn app.main:app --reload
-```
-
-The backend is available at:
-
-- API origin: [http://localhost:8000](http://localhost:8000)
-- Health check: [http://localhost:8000/api/health](http://localhost:8000/api/health)
-- Interactive API documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
-
-### Terminal 2: frontend
-
-```bash
+```sh
 cd frontend
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) in a browser.
-
-The backend currently allows browser requests from `http://localhost:5173`.
-Make sure port `5173` is available when starting Vite.
-
-## Usage
-
-1. Open the Helixora frontend.
-2. Type or paste a DNA sequence, upload a `.fasta`, `.fa`, `.fna`, or `.txt`
-   file, or select an example sequence.
-3. Select **Analyze sequence**.
-4. Review the normalized sequence, length, base counts, composition percentages,
-   complement, and reverse complement.
-5. Select **Clear** to reset the page.
-
-Example input:
-
-```text
- atgc
-```
-
-The input is normalized to `ATGC` and produces:
-
-```text
-Sequence length: 4 bp
-A: 1
-T: 1
-G: 1
-C: 1
-GC content: 50.00%
-AT content: 50.00%
-Complement: TACG
-Reverse complement: GCAT
-```
-
-## API
-
-### Health check
-
-```http
-GET /api/health
-```
-
-Successful response:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### Analyze a DNA sequence
-
-```http
-POST /api/analyze
-Content-Type: application/json
-```
-
-Request body:
-
-```json
-{
-  "sequence": "ATGC"
-}
-```
-
-Successful response:
-
-```json
-{
-  "sequence": "ATGC",
-  "length": 4,
-  "counts": {
-    "A": 1,
-    "T": 1,
-    "G": 1,
-    "C": 1
-  },
-  "gc_content": 50.0,
-  "at_content": 50.0,
-  "complement": "TACG",
-  "reverse_complement": "GCAT"
-}
-```
-
-Invalid DNA characters return HTTP `400`:
-
-```json
-{
-  "detail": "DNA sequence contains invalid characters: X"
-}
-```
-
-## Testing and Quality Checks
-
-### Backend tests
-
-```bash
-cd backend
-source .venv/bin/activate
-python -m pytest -q
-```
-
-### Frontend lint
-
-```bash
-cd frontend
+npm test
 npm run lint
-```
-
-### Frontend production build
-
-```bash
-cd frontend
 npm run build
 ```
 
-The production files are generated in `frontend/dist/`.
-
-To preview the production build locally:
-
-```bash
-npm run preview
+```sh
+cd backend
+.venv/bin/python -m pytest -q
 ```
 
-## Current Scope
+The frontend tests cover sequence analysis, ambiguity codes, invalid input,
+and file parsing. The backend has unit tests and API tests.
 
-Helixora currently performs direct DNA sequence analysis without storing user
-data. It does not yet include authentication, a database, analysis history,
-FASTA file uploads, RNA analysis, protein translation, or result downloads.
+## Structure
+
+- `frontend/src/App.tsx`: input state and analysis flow.
+- `frontend/src/components/`: form, upload dialog, results, and errors.
+- `frontend/src/utils/dnaAnalyzer.ts`: browser-side DNA calculations.
+- `frontend/src/utils/analyzeSequence.ts`: selects browser or API mode.
+- `frontend/src/utils/sequenceFile.ts`: FASTA and text parsing.
+- `frontend/src/api/`: optional HTTP client and shared response types.
+- `backend/app/analyzer.py`: Python DNA calculations.
+- `backend/app/main.py`: FastAPI endpoints.
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for GitHub Pages setup. The workflow publishes
+only the built frontend. GitHub Pages does not run the Python backend.
+
+## Scope
+
+The app analyzes one DNA sequence at a time. It does not store analysis history,
+translate proteins, or accept multi-record FASTA files.

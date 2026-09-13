@@ -1,9 +1,7 @@
-/** Request body accepted by the DNA analysis endpoint. */
 export interface DNAAnalysisRequest {
   sequence: string
 }
 
-/** Counts returned for each canonical DNA nucleotide. */
 export interface BaseCounts {
   A: number
   T: number
@@ -26,7 +24,6 @@ export type IupacAmbiguityCode =
 
 export type AmbiguityCounts = Record<IupacAmbiguityCode, number>
 
-/** Complete analysis returned for a valid DNA sequence. */
 export interface DNAAnalysisResponse {
   sequence: string
   length: number
@@ -42,7 +39,6 @@ export interface DNAAnalysisResponse {
   reverse_complement: string
 }
 
-/** Response returned by the backend health-check endpoint. */
 export interface HealthResponse {
   status: 'ok'
 }
